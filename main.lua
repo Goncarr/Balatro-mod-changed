@@ -17,7 +17,7 @@ SMODS.Atlas{
 SMODS.Joker{
     key = 'Simpleton',
     loc_txt = { 
-        name = 'Simple',
+        name = 'Simple Joker',
         text = {
           'When Blind is selected,',
           'create a {C:attention}Joker{}',
@@ -78,8 +78,8 @@ SMODS.Joker{
     loc_txt = {
         name = 'Jack of All Jokers',
         text = {
-          'When Blind is selected,',
-          'create a two {C:attention}Jokers{}',
+          'When boos blind is defeated,',
+          'create one {C:attention}Joker{}',
           '{C:attention}1 in 6{} chance to destroy',
           'cards next to it',
         },
@@ -209,7 +209,7 @@ SMODS.Joker{
     calculate = function(self,card,context)
         if context.setting_blind then
             local amount = math.random(0,10)
-            if math.random() < 9 then
+            if math.random() <= 5 then
                 return{
                     card = card,
                     dollars = -amount,
@@ -270,7 +270,7 @@ SMODS.Atlas{
     key = 'Double Down',
     px = 71,
     py = 95,
-    path = 'gambling.png'
+    path = 'DoubleDown.png'
 }
 
 SMODS.Joker{
@@ -301,6 +301,62 @@ SMODS.Joker{
                         }
                         end
                 end
+    end
+}
+
+
+SMODS.Atlas{
+    key = 'Voucher Joker',
+    px = 71,
+    py = 95,
+    path = 'voucherJoker.png'
+}
+
+SMODS.Joker{
+    key = "Voucher Joker",
+        loc_txt = {
+        name = 'Voucher Joker',
+        text = {
+            'For every voucher puchased,',
+            'Multiplier increases by 10,',
+            'current multiplier {C:mult}+#1#{} Mult.'
+        }
+    },
+    config = { 
+      extra = {
+        mult = 0
+      }
+    },
+    rarity = 1,
+    cost = 5,
+    unlocked = true,
+    discovered = true,
+    atlas = 'Voucher Joker',
+    pos = {x = 0, y = 0},
+
+    loc_vars = function(self,info_queue,center)
+        info_queue[#info_queue+1] = G.P_CENTERS.j_joker
+        return {vars = {center.ability.extra.mult}}
+    end,
+    
+    calculate = function(self, card, context)  
+        if context.joker_main then
+            return {
+                card = card,
+                mult = card.ability.extra.mult,
+                message = '+' .. card.ability.extra.mult .. 'mult',
+                colour = G.C.MULT
+            }
+        end
+
+        if context.buying_card and context.card.ability.set == 'Voucher' then
+            card.ability.extra.mult = card.ability.extra.mult + 10
+            return{
+                card = card,
+                message = '+' .. '10' .. 'mult',
+                colour = G.C.MULT
+            }
+        end
     end
 }
 
@@ -351,7 +407,7 @@ SMODS.Blind {
     key = "paradox",
     atlas = "paradox",
     pos = { x = 0, y = 0 },
-    dollars = 10,
+    dollars = 5,
     discovered = true,
     mult = 5,
     boss = { min = 1},
@@ -367,3 +423,4 @@ SMODS.Blind {
 
 
 }
+
